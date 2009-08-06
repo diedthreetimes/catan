@@ -1,6 +1,6 @@
 
 public class Point {
-	private int x;
-	private int y;
-	private Resource [] resources;
+	protected int x;
+	protected int y;
+	protected Resource [] resources;
 }
