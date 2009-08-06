@@ -27,4 +27,8 @@ public class Resource {
 		throw new IllegalArgumentException( "Invalid probability.\n");
 	number = p;
 	}
+	
+	public int getNumber() { return number; }
+	public Card produceSettlementCard() { return settleCard.clone(); }
+	public Card produceCityCard() { return cityCard.clone(); }
 }
