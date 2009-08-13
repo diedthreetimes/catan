@@ -1,13 +1,13 @@
 
 public class Resource {
-	private Card settleCard;
+	private Card settleCardPrototype;
 	private Card cityCard;
 	private int number;
 	
 	public Resource (final Card.Type type, final int p ){
 		// nul represents "Robber"
 		if (type != null) {
-			settleCard = new Card(type);
+			settleCardPrototype = new Card(type);
 			if ( p > 12 || p < 2) {
 				throw new IllegalArgumentException( "Invalid probability.\n");
 			}
@@ -20,7 +20,12 @@ public class Resource {
 	}
 	
 	public int getNumber() { return number; }
-	public Card produceSettlementCard() { return settleCard; }
-	public Card produceCityCard() { return cityCard; }
+
+        /**
+         * TODO: this method does not simulate resource limits from the board game. Do we care?
+         */
+	public Card produceCard() {
+            return settleCardPrototype.clone();
+        }
 
 }

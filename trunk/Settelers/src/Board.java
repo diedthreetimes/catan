@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Board {
 	private Point[][] spaces = new Point[6][11];
 	
@@ -5,11 +7,11 @@ public class Board {
 		spaces[0] = new Point[] {
 			null,
 			null,
-			new Point(0, 2, new Resource(Card.ORE, 5)),
-			new Point(0, 3, new Resource(Card.ORE, 5)),
-			new Point(0, 4, new Resource(Card.ORE, 5), new Resource(Card.BRICK, 8)),
-			new Point(0, 5, new Resource(Card.BRICK, 8)),
-			new Point(0, 6, new Resource(Card.BRICK, 8)),
+			new Point(0, 2, new Resource(Card.Type.ORE, 5)),
+			new Point(0, 3, new Resource(Card.Type.ORE, 5)),
+			new Point(0, 4, new Resource(Card.Type.ORE, 5), new Resource(Card.Type.BRICK, 8)),
+			new Point(0, 5, new Resource(Card.Type.BRICK, 8)),
+			new Point(0, 6, new Resource(Card.Type.BRICK, 8)),
 			new Point(0, 7),
 			new Point(0, 8),
 			null,
@@ -17,66 +19,66 @@ public class Board {
 			};
 		spaces[1] = new Point[] {
 			null,
-			new Point(1, 1, new Resource(Card.WHEAT, 2)),
-			new Point(1, 2, new Resource(Card.WHEAT, 2), new Resource(Card.ORE, 5)),
-			new Point(1, 3, new Resource(Card.WHEAT, 2), new Resource(Card.ORE, 5), new Resource(Card.SHEEP, 10)),
-			new Point(1, 4, new Resource(Card.SHEEP, 10), new Resource(Card.ORE, 5), new Resource(Card.BRICK, 8)),
-			new Point(1, 5, new Resource(Card.SHEEP, 10), new Resource(Card.BRICK, 8), new Resource(Card.WOOD, 3)),
-			new Point(1, 6, new Resource(Card.WOOD, 3), new Resource(Card.BRICK, 8)),
-			new Point(1, 7, new Resource(Card.WOOD, 3), new Resource(Card.BRICK, 4)),
-			new Point(1, 8, new Resource(Card.BRICK, 4)),
-			new Point(1, 9, new Resource(Card.BRICK, 4)),
+			new Point(1, 1, new Resource(Card.Type.WHEAT, 2)),
+			new Point(1, 2, new Resource(Card.Type.WHEAT, 2), new Resource(Card.Type.ORE, 5)),
+			new Point(1, 3, new Resource(Card.Type.WHEAT, 2), new Resource(Card.Type.ORE, 5), new Resource(Card.Type.SHEEP, 10)),
+			new Point(1, 4, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.ORE, 5), new Resource(Card.Type.BRICK, 8)),
+			new Point(1, 5, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.BRICK, 8), new Resource(Card.Type.WOOD, 3)),
+			new Point(1, 6, new Resource(Card.Type.WOOD, 3), new Resource(Card.Type.BRICK, 8)),
+			new Point(1, 7, new Resource(Card.Type.WOOD, 3), new Resource(Card.Type.BRICK, 4)),
+			new Point(1, 8, new Resource(Card.Type.BRICK, 4)),
+			new Point(1, 9, new Resource(Card.Type.BRICK, 4)),
 			null
 			};
 		spaces[2] = new Point[] {
-			new Point(2, 0, new Resource(Card.WOOD, 6)),
-			new Point(2, 1, new Resource(Card.WOOD, 6), new Resource(Card.WHEAT, 2)),
-			new Point(2, 2, new Resource(Card.WOOD, 6), new Resource(Card.WHEAT, 2), new Resource(Card.SHEEP, 9)),
-			new Point(2, 3, new Resource(Card.WHEAT, 2), new Resource(Card.SHEEP, 9), new Resource(Card.SHEEP, 10)),
-			new Point(2, 4, new Resource(Card.SHEEP, 9), new Resource(Card.SHEEP, 10), new Resource(Card.WHEAT,11)),
-			new Point(2, 5, new Resource(Card.SHEEP, 10), new Resource(Card.WHEAT, 11), new Resource(Card.WOOD, 3)),
-			new Point(2, 6, new Resource(Card.WHEAT, 11), new Resource(Card.WOOD, 3), new Resource(Card.ORE, 6)),
-			new Point(2, 7, new Resource(Card.WOOD, 3), new Resource(Card.ORE, 6), new Resource(Card.BRICK, 4)),
-			new Point(2, 8, new Resource(Card.ORE, 6), new Resource(Card.BRICK, 4), new Resource(Card.WOOD, 11)),
-			new Point(2, 9, new Resource(Card.BRICK, 4), new Resource(Card.WOOD, 11)),
-			new Point(2, 10, new Resource(Card.WOOD, 11))
+			new Point(2, 0, new Resource(Card.Type.WOOD, 6)),
+			new Point(2, 1, new Resource(Card.Type.WOOD, 6), new Resource(Card.Type.WHEAT, 2)),
+			new Point(2, 2, new Resource(Card.Type.WOOD, 6), new Resource(Card.Type.WHEAT, 2), new Resource(Card.Type.SHEEP, 9)),
+			new Point(2, 3, new Resource(Card.Type.WHEAT, 2), new Resource(Card.Type.SHEEP, 9), new Resource(Card.Type.SHEEP, 10)),
+			new Point(2, 4, new Resource(Card.Type.SHEEP, 9), new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.WHEAT,11)),
+			new Point(2, 5, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.WHEAT, 11), new Resource(Card.Type.WOOD, 3)),
+			new Point(2, 6, new Resource(Card.Type.WHEAT, 11), new Resource(Card.Type.WOOD, 3), new Resource(Card.Type.ORE, 6)),
+			new Point(2, 7, new Resource(Card.Type.WOOD, 3), new Resource(Card.Type.ORE, 6), new Resource(Card.Type.BRICK, 4)),
+			new Point(2, 8, new Resource(Card.Type.ORE, 6), new Resource(Card.Type.BRICK, 4), new Resource(Card.Type.WOOD, 11)),
+			new Point(2, 9, new Resource(Card.Type.BRICK, 4), new Resource(Card.Type.WOOD, 11)),
+			new Point(2, 10, new Resource(Card.Type.WOOD, 11))
 			};
 		spaces[3] = new Point[] {
-			new Point(3, 0, new Resource(Card.WOOD, 6)),
-			new Point(3, 1, new Resource(Card.WOOD, 6), new Resource(Card.ORE, 3)),
-			new Point(3, 2, new Resource(Card.WOOD, 6), new Resource(Card.ORE, 3), new Resource(Card.SHEEP, 9)),
-			new Point(3, 3, new Resource(Card.ORE, 3), new Resource(Card.SHEEP, 9), new Resource(Card.WOOD, 4)),
-			new Point(3, 4, new Resource(Card.WHEAT, 11), new Resource(Card.SHEEP, 9), new Resource(Card.WOOD, 4)),
-			new Point(3, 5, new Resource(Card.BRICK, 5), new Resource(Card.WOOD, 4), new Resource(Card.WHEAT, 11)),
-			new Point(3, 6, new Resource(Card.BRICK, 5), new Resource(Card.WHEAT, 11), new Resource(Card.ORE, 6)),
-			new Point(3, 7, new Resource(Card.ORE, 6), new Resource(Card.SHEEP, 12), new Resource(Card.BRICK, 5)),
-			new Point(3, 8, new Resource(Card.WOOD, 11), new Resource(Card.ORE, 6), new Resource(Card.SHEEP, 12)),
-			new Point(3, 9, new Resource(Card.SHEEP, 12), new Resource(Card.WOOD, 11)),
-			new Point(3, 10, new Resource(Card.WOOD, 11))
+			new Point(3, 0, new Resource(Card.Type.WOOD, 6)),
+			new Point(3, 1, new Resource(Card.Type.WOOD, 6), new Resource(Card.Type.ORE, 3)),
+			new Point(3, 2, new Resource(Card.Type.WOOD, 6), new Resource(Card.Type.ORE, 3), new Resource(Card.Type.SHEEP, 9)),
+			new Point(3, 3, new Resource(Card.Type.ORE, 3), new Resource(Card.Type.SHEEP, 9), new Resource(Card.Type.WOOD, 4)),
+			new Point(3, 4, new Resource(Card.Type.WHEAT, 11), new Resource(Card.Type.SHEEP, 9), new Resource(Card.Type.WOOD, 4)),
+			new Point(3, 5, new Resource(Card.Type.BRICK, 5), new Resource(Card.Type.WOOD, 4), new Resource(Card.Type.WHEAT, 11)),
+			new Point(3, 6, new Resource(Card.Type.BRICK, 5), new Resource(Card.Type.WHEAT, 11), new Resource(Card.Type.ORE, 6)),
+			new Point(3, 7, new Resource(Card.Type.ORE, 6), new Resource(Card.Type.SHEEP, 12), new Resource(Card.Type.BRICK, 5)),
+			new Point(3, 8, new Resource(Card.Type.WOOD, 11), new Resource(Card.Type.ORE, 6), new Resource(Card.Type.SHEEP, 12)),
+			new Point(3, 9, new Resource(Card.Type.SHEEP, 12), new Resource(Card.Type.WOOD, 11)),
+			new Point(3, 10, new Resource(Card.Type.WOOD, 11))
 			};
 		spaces[4] = new Point[] {
 			null,
-			new Point(4, 1, new Resource(Card.ORE, 3)),
-			new Point(4, 2, new Resource(Card.WHEAT, 8), new Resource(Card.ORE, 3)),
-			new Point(4, 3, new Resource(Card.WHEAT, 8), new Resource(Card.ORE, 3), new Resource(Card.WOOD, 4)),
-			new Point(4, 4, new Resource(Card.WHEAT, 8), new Resource(Card.WOOD, 4), new Resource(Card.SHEEP, 10)),
-			new Point(4, 5, new Resource(Card.SHEEP, 10), new Resource(Card.WOOD, 4), new Resource(Card.BRICK, 5)),
-			new Point(4, 6, new Resource(Card.SHEEP, 10), new Resource(Card.BRICK, 5), new Resource(Card.WHEAT, 9)),
-			new Point(4, 7, new Resource(Card.BRICK, 5), new Resource(Card.WHEAT, 9), new Resource(Card.SHEEP, 12)),
-			new Point(4, 8, new Resource(Card.WHEAT, 9), new Resource(Card.SHEEP, 12)),
-			new Point(4, 9, new Resource(Card.SHEEP, 12)),
+			new Point(4, 1, new Resource(Card.Type.ORE, 3)),
+			new Point(4, 2, new Resource(Card.Type.WHEAT, 8), new Resource(Card.Type.ORE, 3)),
+			new Point(4, 3, new Resource(Card.Type.WHEAT, 8), new Resource(Card.Type.ORE, 3), new Resource(Card.Type.WOOD, 4)),
+			new Point(4, 4, new Resource(Card.Type.WHEAT, 8), new Resource(Card.Type.WOOD, 4), new Resource(Card.Type.SHEEP, 10)),
+			new Point(4, 5, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.WOOD, 4), new Resource(Card.Type.BRICK, 5)),
+			new Point(4, 6, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.BRICK, 5), new Resource(Card.Type.WHEAT, 9)),
+			new Point(4, 7, new Resource(Card.Type.BRICK, 5), new Resource(Card.Type.WHEAT, 9), new Resource(Card.Type.SHEEP, 12)),
+			new Point(4, 8, new Resource(Card.Type.WHEAT, 9), new Resource(Card.Type.SHEEP, 12)),
+			new Point(4, 9, new Resource(Card.Type.SHEEP, 12)),
 			null
 			};
 		spaces[5] = new Point[] {
 			null,
 			null,
-			new Point(5, 2, new Resource(Card.WHEAT, 8)),
-			new Point(5, 3, new Resource(Card.WHEAT, 8)),
-			new Point(5, 4, new Resource(Card.WHEAT, 8), new Resource(Card.SHEEP, 10)),
-			new Point(5, 5, new Resource(Card.SHEEP, 10)),
-			new Point(5, 6, new Resource(Card.SHEEP, 10), new Resource(Card.WHEAT, 9)),
-			new Point(5, 7, new Resource(Card.WHEAT, 9)),
-			new Point(5, 8, new Resource(Card.WHEAT, 9)),
+			new Point(5, 2, new Resource(Card.Type.WHEAT, 8)),
+			new Point(5, 3, new Resource(Card.Type.WHEAT, 8)),
+			new Point(5, 4, new Resource(Card.Type.WHEAT, 8), new Resource(Card.Type.SHEEP, 10)),
+			new Point(5, 5, new Resource(Card.Type.SHEEP, 10)),
+			new Point(5, 6, new Resource(Card.Type.SHEEP, 10), new Resource(Card.Type.WHEAT, 9)),
+			new Point(5, 7, new Resource(Card.Type.WHEAT, 9)),
+			new Point(5, 8, new Resource(Card.Type.WHEAT, 9)),
 			null,
 			null
 			};

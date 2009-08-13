@@ -10,8 +10,8 @@ public class City extends Settlement {
 		List<Card> ans = new LinkedList<Card>() ;
 		for (Resource r : resources){
 			if( r.producesForRoll(num)) {
-				ans.add(r.produceSettlementCard());
-				ans.add(r.produceCityCard());
+				ans.add(r.produceCard());
+				ans.add(r.produceCard());
 			}	
 		}
 		return ans;

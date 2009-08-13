@@ -77,6 +77,57 @@ public class State {
             return new State(turn + 1, this.points, newHand, this.cities,
                     this.settlements, this.roads, this.map, probability * transitionProbability);
         }
+
+        /**
+         * Much easier in the single player-case: we qualify for "longest road" if our road has a non-branching length of 5.
+         */
+        public boolean isLongestRoad() {
+            return longestRoadLength() >= 5;
+        }
+
+        /**
+         * Of course, the longest-path problem for undirected graphs is NP-complete.
+         */
+        private int longestRoadLength() {
+            final Map<Point, Set<Point>> transitions = buildTransitionMap();
+            int max = 0;
+            for (final Point start : transitions.keySet()) {
+                max = Math.max(max, longestRoadFrom(start, new HashSet<Point>(), transitions));
+            }
+            return max;
+        }
+
+        /**
+         * Not very efficient, but at least it detects cycles.
+         */
+        private int longestRoadFrom(final Point current, final Set<Point> visited, final Map<Point, Set<Point>> transitions) {
+            visited.add(current);
+            int max = -1;
+            for (final Point next : transitions.get(current)) if (!visited.contains(next)) {
+                max = Math.max(max, longestRoadFrom(next, new HashSet<Point>(visited), transitions));
+            }
+            return 1 + max; // 0 if no valid next, at least 1 otherwise
+        }
+
+        private Map<Point, Set<Point>> buildTransitionMap() {
+            final Map<Point, Set<Point>> transitions = new HashMap<Point, Set<Point>>();
+            for (final Road r: roads) {
+                if (!transitions.containsKey(r.getStart())) {
+                    transitions.put(r.getStart(), new HashSet<Point>());
+                }
+                if (!transitions.containsKey(r.getEnd())) {
+                    transitions.put(r.getEnd(), new HashSet<Point>());
+                }
+                transitions.get(r.getStart()).add(r.getEnd());
+                transitions.get(r.getEnd()).add(r.getStart());
+            }
+            return transitions;
+        }
+
+        public int getPoints() {
+            return points + (isLongestRoad() ? 2 : 0);
+        }
+
 	
 	public String toString(){
             return "Probability: " + this.probability + "\n\n" +
@@ -85,6 +136,7 @@ public class State {
 	}
 
         /**
+         * TODO: No more state changes if game has been "won"
          * @return possible states as outcomes of a die roll.
          */
 	public List<State> generateRollStates(){
@@ -108,10 +160,24 @@ public class State {
 	}
 	
         /**
-         * @todo: implement
+         * TODO: implement
          * @return possible states as outcomes of "game play"
          */
 	public List<State> generatePlayStates(){
-		return null;
+            /*
+             Turn phase:
+             resource production (see #generateRollStates)
+             trade:
+                domestic trade (out of scope)
+                maritime trade (low priority?)
+             build
+                road
+                settlement
+                city
+                development card (out of scope?)
+            special cases
+                robber (out of scope?)
+                */
+            return null;
 	}
 }
