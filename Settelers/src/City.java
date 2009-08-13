@@ -9,7 +9,7 @@ public class City extends Settlement {
 	public List<Card> roll(int num){
 		List<Card> ans = new LinkedList<Card>() ;
 		for (Resource r : resources){
-			if( r.getNumber() == num ){
+			if( r.producesForRoll(num)) {
 				ans.add(r.produceSettlementCard());
 				ans.add(r.produceCityCard());
 			}	
