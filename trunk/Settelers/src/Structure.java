@@ -2,24 +2,27 @@ import java.util.*;
 
 // enumerates structure names and costs
 public enum Structure {
-		ROAD, SETTLEMENT, CITY;
-		
-		// returns true if given hand includes enough resources to build 
-		// given structure
-		boolean canBuild(HashMap<Card, Integer> hand) {
-			if (this == Structure.ROAD)
-				if (hand.get(Card.WOOD) < 1 || hand.get(Card.BRICK) < 1)
-					return false;
-			else if (this == Structure.SETTLEMENT)
-				if (hand.get(Card.WOOD) < 1 || hand.get(Card.BRICK) < 1
-					|| (hand.get(Card.WHEAT) < 1 || hand.get(Card.SHEEP) < 1))
-					return false;
-			else if (this == Structure.CITY)
-				if (hand.get(Card.WHEAT) < 2 || hand.get(Card.ORE) < 3)
-					return false;
-			else
-				throw new IllegalArgumentException("Invalid structure.");
-			return true;
-		}
+		ROAD {
+			boolean canBuild(final Map<Card.Type, Integer> hand) {
+				return hand.get(Card.Type.WOOD) >= 1 && hand.get(Card.Type.BRICK) >= 1;
+			}
+		},
+		SETTLEMENT {
+			boolean canBuild(final Map<Card.Type, Integer> hand) {
+				return hand.get(Card.Type.WOOD) >= 1 && hand.get(Card.Type.BRICK) >= 1
+					&& hand.get(Card.Type.WHEAT) >= 1 && hand.get(Card.Type.SHEEP) >= 1;
+			}
+		},
+		CITY {
+			boolean canBuild(final Map<Card.Type, Integer> hand) {
+				return hand.get(Card.Type.WHEAT) >= 2 && hand.get(Card.Type.ORE) >= 3;
+			}
+		};
+
+		/**
+		 * @return true if given hand includes enough resources to build 
+		 * given structure
+		 */
+		abstract boolean canBuild(final Map<Card.Type, Integer> hand);
 }
 
