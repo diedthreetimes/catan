@@ -1,10 +1,15 @@
 import java.util.*;
 
 public class Road {
-    private Point start;
-    private Point end;
+    private final Point start;
+    private final Point end;
 
     public Road ( Point start, Point end ){
+	if (start == null) {
+	    throw new IllegalArgumentException("start cannot be null");
+	} else if (end == null) {
+	    throw new IllegalArgumentException("end cannot be null");
+	}
         this.start = start;
         this.end = end;
     }
@@ -31,6 +36,9 @@ public class Road {
     }
 
     public Set<Road> getPotentialConnectors(final Board board) {
+	if (board == null) {
+	    throw new IllegalArgumentException("board cannot be null");
+	}
         final Set<Road> potential = new HashSet<Road>();
         for (final Point p : board.getNeighbors(start)) if (!end.equals(p)) {
             potential.add(new Road(start, p));
