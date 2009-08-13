@@ -62,5 +62,17 @@ public class Board {
 			null,
 			new Point(Card.WHEAT, Card.SHEEP),
 			null};
+		spaces[5] = new Point[] {
+			new Point(),
+			null,
+			new Point(Card.BRICK, Card.WHEAT),
+			null,
+			new Point(Card.WOOD, Card.WHEAT, Card.ORE),
+			null,
+			new Point(Card.WOOD, Card.BRICK, Card.WHEAT),
+			null,
+			new Point(Card.WOOD, Card.WHEAT, Card.SHEEP),
+			null,
+			new Point(Card.WHEAT)};
 	}
 }
