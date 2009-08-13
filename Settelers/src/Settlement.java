@@ -8,7 +8,7 @@ public class Settlement extends Point {
 		List<Card> ans = new LinkedList<Card>() ;
 		for (Resource r : resources){
 			if( r.getNumber() == num )
-				ans.add(r.produceSettlementCard());
+				ans.add(r.produceCard());
 				
 		}
 		return ans;
