@@ -2,6 +2,7 @@ public class Board {
 	private Point[][] spaces = new Point[12][11];
 	
 	{
+		/*
 		spaces[0] = new Point[] {
 			null,
 			null,
@@ -73,6 +74,12 @@ public class Board {
 			null,
 			new Point(Card.WOOD, Card.WHEAT, Card.SHEEP),
 			null,
-			new Point(Card.WHEAT)};
+			new Point(Card.WHEAT)};*/
+	}
+	
+	// Return the point at (x,y)
+	public Point getPoint(int x, int y){
+		// Just make something up for now
+		return new Point(0, 0, new Resource( Card.SHEEP, 6 ), new Resource( Card.BRICK, 8), new Resource( Card.WOOD, 6) );
 	}
 }
