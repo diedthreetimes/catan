@@ -10,7 +10,7 @@ public class Board {
 			null,
 			new Point(Card.SHEEP),
 			null,
-			null, // Desert
+			new Point(Card.WHEAT),
 			null,
 			null,
 			null};
@@ -21,10 +21,34 @@ public class Board {
 			null,
 			new Point(Card.WOOD, Card.SHEEP),
 			null,
-			new Point(Card.SHEEP),
+			new Point(Card.SHEEP, Card.WHEAT),
 			null,
-			null, // Desert
+			new Point(Card.WHEAT),
 			null,
+			null};
+		spaces[2] = new Point[] {
+			null,
+			null,
+			new Point(Card.WOOD, Card.BRICK),
+			null,
+			new Point(Card.WOOD, Card.SHEEP, Card.ORE),
+			null,
+			new Point(Card.SHEEP, Card.BRICK, Card.WHEAT),
+			null,
+			new Point(Card.SHEEP, Card.WHEAT),
+			null,
+			null};
+		spaces[3] = new Point[] {
+			null,
+			new Point(Card.BRICK),
+			null,
+			new Point(Card.WOOD, Card.BRICK, Card.ORE),
+			null,
+			new Point(Card.SHEEP, Card.BRICK, Card.ORE),
+			null,
+			new Point(Card.BRICK, Card.SHEEP, Card.WHEAT),
+			null,
+			new Point(Card.WHEAT),
 			null};
 	}
 }
