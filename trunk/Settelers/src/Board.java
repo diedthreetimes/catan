@@ -48,7 +48,19 @@ public class Board {
 			null,
 			new Point(Card.BRICK, Card.SHEEP, Card.WHEAT),
 			null,
-			new Point(Card.WHEAT),
+			new Point(Card.SHEEP),
+			null};
+		spaces[4] = new Point[] {
+			null,
+			new Point(Card.BRICK),
+			null,
+			new Point(Card.WOOD, Card.BRICK, Card.ORE),
+			null,
+			new Point(Card.WHEAT, Card.BRICK, Card.ORE),
+			null,
+			new Point(Card.BRICK, Card.SHEEP, Card.WOOD),
+			null,
+			new Point(Card.WHEAT, Card.SHEEP),
 			null};
 	}
 }
