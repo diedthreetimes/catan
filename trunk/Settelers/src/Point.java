@@ -15,6 +15,12 @@ public class Point {
      * NOTE: this logic explicitly assumes single player.
      */
     public boolean canPlaceSettlement(final Board b, final Collection<City> cities, final Collection<Settlement> settlements) {
+        for (final City city : cities) if (equals(city)) {
+            return false;
+        }
+        for (final Settlement settlement : settlements) if (equals(settlement)) {
+            return false;
+        }
         for (final Point neighbor : b.getNeighbors(this)) {
             for (final City city : cities) if (neighbor.equals(city)) {
                 return false;
