@@ -56,7 +56,10 @@ public class State {
 	}
 
         /**
-         * @see #nextTurn(double, Map) below for the only caller of this contructor.
+         * @see #nextTurn(double, Map) below.
+         * @see #buildRoad(double, Road) below
+         * @see #buidSettlement(double, Settlement) below
+         * @see #buildCity(double, City) below
          */
 	private State( int t, int p, Map<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr ){
 		turn = t;
@@ -76,6 +79,32 @@ public class State {
         private State nextTurn(final double transitionProbability, final Map<Card.Type, Integer> newHand) {
             return new State(turn + 1, this.points, newHand, this.cities,
                     this.settlements, this.roads, this.map, probability * transitionProbability);
+        }
+
+        private State buildRoad(final double transitionalProbability, final Road r) {
+            final List<Road> newRoads = new ArrayList<Road>(roads);
+            newRoads.add(r);
+            final Map<Card.Type, Integer> newHand = Structure.ROAD.payFrom(hand);
+            return new State(turn +1, this.points, newHand, this.cities,
+                    this.settlements, newRoads, this.map, probability * transitionalProbability);
+        }
+
+        private State buildSettlement(final double transitionalProbability, final Settlement s) {
+            final List<Settlement> newSettlements = new ArrayList<Settlement>(settlements);
+            newSettlements.add(s);
+            final Map<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
+            return new State(turn +1, this.points +1, newHand, this.cities,
+                    newSettlements, this.roads, this.map, probability * transitionalProbability);
+        }
+
+        private State buildCity(final double transitionalProbability, final Settlement s) {
+            final List<Settlement> newSettlements = new ArrayList<Settlement>(settlements);
+            newSettlements.remove(s);
+            final List<City> newCities = new ArrayList<City>(cities);
+            newCities.add(new City(s));
+            final Map<Card.Type, Integer> newHand = Structure.CITY.payFrom(hand);
+            return new State(turn +1, this.points +1, newHand, newCities,
+                    newSettlements, this.roads, this.map, probability * transitionalProbability);
         }
 
         /**
@@ -178,6 +207,61 @@ public class State {
             special cases
                 robber (out of scope?)
                 */
-            return null;
+            final Set<Road> potentialRoads = new HashSet<Road>();
+            final Set<Settlement> potentialSettlements = new HashSet<Settlement>();
+            final Set<Settlement> potentialCities = new HashSet<Settlement>();
+            final Set<Structure> structureOptions = Structure.canBuildOptions(hand);
+            if (structureOptions.contains(Structure.ROAD)) {
+                potentialRoads.addAll(getAllPotentialRoads());
+            }
+            if (structureOptions.contains(Structure.SETTLEMENT)) {
+                potentialSettlements.addAll(getAllPotentialSettlements());
+            }
+            if (structureOptions.contains(Structure.CITY)) for (final Settlement s : settlements) {
+                potentialCities.add(s);
+            }
+            final int numProjects = potentialRoads.size() + potentialSettlements.size() + potentialCities.size();
+            final List<State> playStates = new ArrayList<State>();
+            if (numProjects > 0) {
+                // treat all projects as equally likely until we have a smarter algorithm
+                final double projectProbability = 1.0 / numProjects;
+                for (final Road r : potentialRoads) {
+                    playStates.add(buildRoad(projectProbability, r));
+                }
+                for (final Settlement s : potentialSettlements) {
+                    playStates.add(buildSettlement(projectProbability, s));
+                }
+                for (final Settlement s: potentialCities) {
+                    playStates.add(buildCity(projectProbability, s));
+                }
+                // buid a wrapper list so we don't modify the collection under iteration
+                for (final State s : new ArrayList<State>(playStates)) {
+                    // add all derivative states (other projects we can "buy" now
+                    playStates.addAll(s.generatePlayStates());
+                }
+            }
+            return playStates;
 	}
+
+        private Set<Road> getAllPotentialRoads() {
+            final Set<Road> potential = new HashSet<Road>();
+            for (final Road road: roads) {
+                potential.addAll(road.getPotentialConnectors(map));
+            }
+            potential.removeAll(roads);
+            return potential;
+        }
+
+        private Set<Settlement> getAllPotentialSettlements() {
+            final Set<Point> potential = new HashSet<Point>();
+            for (final Road road : roads) {
+                potential.add(road.getStart());
+                potential.add(road.getEnd());
+            }
+            final Set<Settlement> potentialSettlements = new HashSet<Settlement>();
+            for (final Point point : potential) if (point.canPlaceSettlement(map, cities, settlements)) {
+                potentialSettlements.add(new Settlement(point));
+            }
+            return potentialSettlements;
+        }
 }
