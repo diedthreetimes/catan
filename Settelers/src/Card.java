@@ -1,40 +1,27 @@
 
 public class Card implements Cloneable{
-	public static final int WOOD = 0;
-	public static final int BRICK = 1;
-	public static final int ORE = 2;
-	public static final int WHEAT = 3;
-	public static final int SHEEP = 4;
+	/**
+	 * enum builds in the validation logic we need.
+	 */
+	public static enum Type {WOOD, BRICK, ORE, WHEAT, SHEEP};
 	
-	private int val;
+	private final Type type;
 	
-	public Card( int v ){
-		if (v < 5)
-			val = v;
-		else
-			throw new IllegalArgumentException("Invalid Resource");
+	public Card( final Type type ){
+		this.type = type;
 	}
-	public int hashCode(){
-		return val;
-	}
+
 	public Card clone(){
-		return new Card(val);
+		return new Card(type);
 	}
 	
 	public String toString(){
-		switch (val){
-		case WOOD: return "[Wood]";
-		case BRICK:return "[Brick]";
-		case ORE: return "[Ore]";
-		case WHEAT: return "[Wheat]";
-		case SHEEP: return "[Sheep]";
-		}	
-		return null;
+		return "[" + type + "]";
 	}
 	
 	public boolean equals(Object o){
 		if (!(o instanceof Card))
 			return false;
-		return ((Card)o).val == this.val;
+		return ((Card)o).type.equals(this.type);
 	}
 }

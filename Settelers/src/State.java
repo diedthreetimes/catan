@@ -1,4 +1,5 @@
 import java.util.*;
+
 public class State {
 	private int turn;
 	private int points;
@@ -16,21 +17,22 @@ public class State {
 		turn = 0;
 		points = 2;
 		hand = new HashMap<Card, Integer>();
-		hand.put(new Card( Card.ORE ), 0);
-		hand.put(new Card( Card.SHEEP ), 0);
-		hand.put(new Card( Card.WHEAT ), 0);
-		hand.put(new Card( Card.WOOD ), 0);
-		hand.put(new Card( Card.BRICK ), 0);
+		hand.put(new Card( Card.Type.ORE ), 0);
+		hand.put(new Card( Card.Type.SHEEP ), 0);
+		hand.put(new Card( Card.Type.WHEAT ), 0);
+		hand.put(new Card( Card.Type.WOOD ), 0);
+		hand.put(new Card( Card.Type.BRICK ), 0);
 		
-		cities = new LinkedList<City>();
+		// LinkedList should only be used when frequent reordering is expected
+		cities = new ArrayList<City>();
 		
 		// Should check validity of set
-		settlements = new LinkedList<Settlement>();
+		settlements = new ArrayList<Settlement>();
 		settlements.add( s1 );
 		settlements.add( s2 );
 		
 		// and of the roads
-		roads = new LinkedList<Road>();
+		roads = new ArrayList<Road>();
 		roads.add(r1);
 		roads.add(r2);
 		
@@ -68,7 +70,7 @@ public class State {
 		"Hand: " + hand + "\n";
 	}
 	public List<State> generateRollStates(){
-		List<State> ans = new LinkedList<State>();
+		List<State> ans = new ArrayList<State>();
 		for( int i = 2; i<=12; i++ ){
 			HashMap<Card, Integer> newHand = (HashMap<Card, Integer>) hand.clone();
 			for( Settlement s : settlements){
