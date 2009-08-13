@@ -223,7 +223,7 @@ public class State {
                 city
                 development card (out of scope?) //yes
             special cases
-                robber (out of scope?)
+                robber (out of scope?) //yes
                 */
             final Set<Road> potentialRoads = new HashSet<Road>();
             final Set<Settlement> potentialSettlements = new HashSet<Settlement>();
