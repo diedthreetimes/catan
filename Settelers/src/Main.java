@@ -13,7 +13,9 @@ public class Main {
 		Settlement s2 = new Settlement( board.getPoint( 5, 5 ) );
 		State start = new State ( s1, s2, new Road(s1, board.getPoint(0, 1)), new Road(s2, board.getPoint(5,6)), null );
 		
-		start.generateRollStates();
+		System.out.println(start);
+		for( State s : start.generateRollStates() )
+			System.out.println(s);
 	}
 
 }

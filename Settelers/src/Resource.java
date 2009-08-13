@@ -29,6 +29,6 @@ public class Resource {
 	}
 	
 	public int getNumber() { return number; }
-	public Card produceSettlementCard() { return settleCard.clone(); }
-	public Card produceCityCard() { return cityCard.clone(); }
+	public Card produceSettlementCard() { return settleCard; }
+	public Card produceCityCard() { return cityCard; }
 }
