@@ -7,15 +7,21 @@ public class State {
 	private List<Settlement> settlements;
 	private List<Road> roads;
 	private Board map;
-	private float probability;
+	private double probability;
 	
 	/* Chance of rolling x - 2 */
-	static float [] pr = { 1/36, 2/36, 3/36, 4/36, 5/36, 6/36, 5/36, 4/36, 3/36, 2/36 ,1/36 };
+	static double [] pr = { 1.0/36.0, 2.0/36, 3.0/36, 4.0/36, 5.0/36, 6.0/36, 5.0/36, 4.0/36, 3.0/36, 2.0/36 , 1.0/36 };
 	
 	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m){
 		turn = 0;
 		points = 2;
 		hand = new HashMap<Card, Integer>();
+		hand.put(new Card( Card.ORE ), 0);
+		hand.put(new Card( Card.SHEEP ), 0);
+		hand.put(new Card( Card.WHEAT ), 0);
+		hand.put(new Card( Card.WOOD ), 0);
+		hand.put(new Card( Card.BRICK ), 0);
+		
 		cities = new LinkedList<City>();
 		
 		// Should check validity of set
@@ -42,7 +48,7 @@ public class State {
 		map = m;
 		probability = pr;
 	}
-	public State( int t, float pr, State state, HashMap<Card, Integer> h ){
+	public State( int t, double pr, State state, HashMap<Card, Integer> h ){
 		cities = state.cities;
 		settlements = state.settlements;
 		roads = state.roads;
@@ -58,7 +64,8 @@ public class State {
 		return 
 		
 		"Probability: " + this.probability + "\n\n" +
-		"Hand: " + hand + "\n\n\n";
+		"Turn: " + turn +"\n" +
+		"Hand: " + hand + "\n";
 	}
 	public List<State> generateRollStates(){
 		List<State> ans = new LinkedList<State>();

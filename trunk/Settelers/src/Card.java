@@ -31,4 +31,10 @@ public class Card implements Cloneable{
 		}	
 		return null;
 	}
+	
+	public boolean equals(Object o){
+		if (!(o instanceof Card))
+			return false;
+		return ((Card)o).val == this.val;
+	}
 }
