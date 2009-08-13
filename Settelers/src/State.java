@@ -72,6 +72,10 @@ public class State {
 		probability = pr;
 	}
 
+	public State keepWinning() {
+	    return new State(turn + 1, points, hand, cities, settlements, roads, map, probability);
+	}
+
         /**
          * @param transitionProbability Probability of transitioning to this new state.
          * @param newHand Hand for the next stage.
@@ -157,11 +161,19 @@ public class State {
             return points + (isLongestRoad() ? 2 : 0);
         }
 
+	public int getTurn() {
+	    return turn;
+	}
+
+	public boolean isWinning() {
+	    return getPoints() >= 10;
+	}
 	
 	public String toString(){
-            return "Probability: " + this.probability + "\n\n" +
-            "Turn: " + turn +"\n" +
-            "Hand: " + hand + "\n";
+            return "Probability: " + this.probability + "\n\n"
+		    + "Turn: " + turn +"\n"
+		    + "Hand: " + hand + "\n"
+		    + "Points: " + getPoints();
 	}
 
         /**
@@ -189,7 +201,6 @@ public class State {
 	}
 	
         /**
-         * TODO: implement
          * @return possible states as outcomes of "game play"
          */
 	public List<State> generatePlayStates(){
