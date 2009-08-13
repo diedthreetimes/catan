@@ -24,6 +24,8 @@ public class State {
 	
         /**
          * Should this take a Collection of settlements and a Collection of roads?
+         * Theoretically it could, but any initial state according to the rules of Catan
+         *  only has two settlements and two roads.
          */
 	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m){
 		turn = 0;
@@ -85,6 +87,7 @@ public class State {
                     this.settlements, this.roads, this.map, probability * transitionProbability);
         }
 
+        /* Should we add validation to these methods? */
         private State buildRoad(final double transitionalProbability, final Road r) {
             final List<Road> newRoads = new ArrayList<Road>(roads);
             newRoads.add(r);
@@ -93,9 +96,9 @@ public class State {
                     this.settlements, newRoads, this.map, probability * transitionalProbability);
         }
 
-        private State buildSettlement(final double transitionalProbability, final Settlement s) {
+        private State buildSettlement(final double transitionalProbability, final Point s) {
             final List<Settlement> newSettlements = new ArrayList<Settlement>(settlements);
-            newSettlements.add(s);
+            newSettlements.add(new Settlement (s));
             final Map<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
             return new State(turn +1, this.points +1, newHand, this.cities,
                     newSettlements, this.roads, this.map, probability * transitionalProbability);
@@ -177,10 +180,14 @@ public class State {
 	}
 
         /**
-         * TODO: No more state changes if game has been "won"
          * @return possible states as outcomes of a die roll.
          */
 	public List<State> generateRollStates(){
+		
+			//Return an empty list if we already won.
+			if ( this.isWinning() )
+				return new ArrayList<State>(0);
+			
             final List<State> ans = new ArrayList<State>(11);
             for( int i = 2; i<=12; i++ ){
                 final Map<Card.Type, Integer> newHand = new EnumMap<Card.Type, Integer>(hand);
@@ -207,14 +214,14 @@ public class State {
             /*
              Turn phase:
              resource production (see #generateRollStates)
-             trade:
+             trade: // Trade should be after build
                 domestic trade (out of scope)
-                maritime trade (low priority?)
+                maritime trade (low priority?) //if we can trade we do simple Pr for now
              build
                 road
                 settlement
                 city
-                development card (out of scope?)
+                development card (out of scope?) //yes
             special cases
                 robber (out of scope?)
                 */
