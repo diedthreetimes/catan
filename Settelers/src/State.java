@@ -12,6 +12,26 @@ public class State {
 	/* Chance of rolling x - 2 */
 	static float [] pr = { 1/36, 2/36, 3/36, 4/36, 5/36, 6/36, 5/36, 4/36, 3/36, 2/36 ,1/36 };
 	
+	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m){
+		turn = 0;
+		points = 2;
+		hand = new HashMap<Card, Integer>();
+		cities = new LinkedList<City>();
+		
+		// Should check validity of set
+		settlements = new LinkedList<Settlement>();
+		settlements.add( s1 );
+		settlements.add( s2 );
+		
+		// and of the roads
+		roads = new LinkedList<Road>();
+		roads.add(r1);
+		roads.add(r2);
+		
+		map = m;
+		
+		probability = 1;
+	}
 	public State( int t, int p, HashMap<Card, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, float pr ){
 		turn = t;
 		points = p;
@@ -32,6 +52,13 @@ public class State {
 		turn = t;
 		probability = pr;
 		hand = h;
+	}
+	
+	public String toString(){
+		return 
+		
+		"Probability: " + this.probability + "\n\n" +
+		"Hand: " + hand + "\n\n\n";
 	}
 	public List<State> generateRollStates(){
 		List<State> ans = new LinkedList<State>();
