@@ -14,6 +14,10 @@ public class Card implements Cloneable{
 	public Card clone(){
 		return new Card(type);
 	}
+
+	public Card.Type getType() {
+	    return type;
+        }
 	
 	public String toString(){
 		return "[" + type + "]";

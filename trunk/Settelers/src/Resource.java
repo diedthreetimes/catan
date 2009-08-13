@@ -8,10 +8,15 @@ public class Resource {
 		// nul represents "Robber"
 		if (type != null) {
 			settleCard = new Card(type);
+			if ( p > 12 || p < 2) {
+				throw new IllegalArgumentException( "Invalid probability.\n");
+			}
 		}
-	if ( p > 12 || p < 2)
-		throw new IllegalArgumentException( "Invalid probability.\n");
 		number = p;
+	}
+
+	public boolean producesForRoll(final int roll) {
+		return (roll == number);
 	}
 	
 	public int getNumber() { return number; }
