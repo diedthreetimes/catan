@@ -6,6 +6,8 @@ public class Resource {
 	
 	public Resource ( int v, int p ){
 		switch ( v ){
+		case -1: settleCard = null; // Robber
+						break;
 		case Card.WOOD : settleCard = new Card( Card.WOOD );
 						 cityCard   = new Card( Card.WOOD );
 						 break;
@@ -31,4 +33,5 @@ public class Resource {
 	public int getNumber() { return number; }
 	public Card produceSettlementCard() { return settleCard; }
 	public Card produceCityCard() { return cityCard; }
+
 }
