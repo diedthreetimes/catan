@@ -1,18 +1,25 @@
 import java.util.*;
 
 public class State {
-	private int turn;
-	private int points;
-	private final Map<Card.Type, Integer> hand;
-	private List<City> cities;
-	private List<Settlement> settlements;
-	private List<Road> roads;
-	private Board map;
-	private double probability;
-	
 	/* Chance of rolling x - 2 */
-	static double [] pr = { 1.0/36.0, 2.0/36, 3.0/36, 4.0/36, 5.0/36, 6.0/36, 5.0/36, 4.0/36, 3.0/36, 2.0/36 , 1.0/36 };
+	private static final double [] PR = {
+                1.0/36.0, 2.0/36, 3.0/36, 4.0/36,
+                5.0/36, 6.0/36, 5.0/36, 4.0/36,
+                3.0/36, 2.0/36 , 1.0/36 };
+
+	private final int turn;
+	private final int points;
+	private final Map<Card.Type, Integer> hand;
+	private final List<City> cities;
+	private final List<Settlement> settlements;
+	private final List<Road> roads;
+	private final Board map;
+	private final double probability;
 	
+	
+        /**
+         * Should this take a Collection of settlements and a Collection of roads?
+         */
 	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m){
 		turn = 0;
 		points = 2;
@@ -40,7 +47,8 @@ public class State {
 		
 		probability = 1;
 	}
-	public State( int t, int p, Map<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, float pr ){
+
+	private State( int t, int p, Map<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr ){
 		turn = t;
 		points = p;
 		hand = H;
@@ -50,24 +58,16 @@ public class State {
 		map = m;
 		probability = pr;
 	}
-	public State( int t, double pr, State state, Map<Card.Type, Integer> h ){
-		cities = state.cities;
-		settlements = state.settlements;
-		roads = state.roads;
-		map = state.map;
-		points = state.points;
-		
-		turn = t;
-		probability = pr;
-		hand = h;
-	}
+
+        private State nextTurn(final double transitionProbability, final Map<Card.Type, Integer> newHand) {
+            return new State(turn + 1, this.points, newHand, this.cities,
+                    this.settlements, this.roads, this.map, probability * transitionProbability);
+        }
 	
 	public String toString(){
-		return 
-		
-		"Probability: " + this.probability + "\n\n" +
-		"Turn: " + turn +"\n" +
-		"Hand: " + hand + "\n";
+            return "Probability: " + this.probability + "\n\n" +
+            "Turn: " + turn +"\n" +
+            "Hand: " + hand + "\n";
 	}
 
 	public List<State> generateRollStates(){
@@ -85,7 +85,7 @@ public class State {
                     }
                 }
                 
-                ans.add( new State( turn + 1, probability * pr[i - 2], this, newHand) );
+                ans.add(nextTurn(PR[i - 2], newHand));
             }
             return ans;
 	}
