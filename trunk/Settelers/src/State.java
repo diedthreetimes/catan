@@ -167,6 +167,10 @@ public class State {
 	public int getTurn() {
 	    return turn;
 	}
+	
+	public double getProbability(){
+		return probability;
+	}
 
 	public boolean isWinning() {
 	    return getPoints() >= 10;
