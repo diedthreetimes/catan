@@ -47,7 +47,7 @@ public class Main {
 		    for (final State s: current) {
 		    	System.out.println(s);
 		    }
-		    current.addAll(current);
+		    current.addAll( nextStates(current) );
 		}
 		
 		System.out.println(turnStates);
