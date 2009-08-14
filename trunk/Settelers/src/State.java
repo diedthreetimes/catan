@@ -92,7 +92,7 @@ public class State {
             final List<Road> newRoads = new ArrayList<Road>(roads);
             newRoads.add(r);
             final Map<Card.Type, Integer> newHand = Structure.ROAD.payFrom(hand);
-            return new State(turn +1, this.points, newHand, this.cities,
+            return new State(turn , this.points, newHand, this.cities,
                     this.settlements, newRoads, this.map, probability * transitionalProbability);
         }
 
@@ -100,7 +100,7 @@ public class State {
             final List<Settlement> newSettlements = new ArrayList<Settlement>(settlements);
             newSettlements.add(new Settlement (s));
             final Map<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
-            return new State(turn +1, this.points +1, newHand, this.cities,
+            return new State(turn , this.points +1, newHand, this.cities,
                     newSettlements, this.roads, this.map, probability * transitionalProbability);
         }
 
@@ -110,7 +110,7 @@ public class State {
             final List<City> newCities = new ArrayList<City>(cities);
             newCities.add(new City(s));
             final Map<Card.Type, Integer> newHand = Structure.CITY.payFrom(hand);
-            return new State(turn +1, this.points +1, newHand, newCities,
+            return new State(turn , this.points +1, newHand, newCities,
                     newSettlements, this.roads, this.map, probability * transitionalProbability);
         }
 
@@ -161,7 +161,7 @@ public class State {
         }
 
         public int getPoints() {
-            return points + (isLongestRoad() ? 2 : 0);
+            return points;// + (isLongestRoad() ? 2 : 0);
         }
 
 	public int getTurn() {
@@ -173,14 +173,16 @@ public class State {
 	}
 
 	public boolean isWinning() {
-	    return getPoints() >= 10;
+	    return getPoints() >= 8;
 	}
 	
 	public String toString(){
-            return "Probability: " + this.probability + "\n\n"
+            return "Probability: " + this.probability + "\n"
 		    + "Turn: " + turn +"\n"
 		    + "Hand: " + hand + "\n"
-		    + "Points: " + getPoints();
+		    + "Points: " + getPoints() + "\n" 
+            + "Roads: " + roads.size() + "\n"
+            + "Cities: " + cities.size() + "\n";
 	}
 
         /**
@@ -193,6 +195,8 @@ public class State {
 				return new ArrayList<State>(0);
 			
             final List<State> ans = new ArrayList<State>(11);
+            
+            double noChangePr = 0;
             for( int i = 2; i<=12; i++ ){
                 final Map<Card.Type, Integer> newHand = new EnumMap<Card.Type, Integer>(hand);
                 for( final Settlement s : settlements){
@@ -206,8 +210,13 @@ public class State {
                     }
                 }
                 
-                ans.add(nextTurn(PR[i - 2], newHand));
+                if( newHand.equals(this.hand) )
+                	noChangePr += PR[i - 2];
+                else
+                	ans.add(nextTurn(PR[i - 2], newHand));
             }
+            if( noChangePr != 0 )
+            	ans.add(nextTurn(noChangePr, this.hand));
             return ans;
 	}
 	
@@ -247,11 +256,11 @@ public class State {
             if (numProjects > 0) {
                 // treat all projects as equally likely until we have a smarter algorithm
                 final double projectProbability = 1.0 / numProjects;
-                for (final Road r : potentialRoads) {
-                    playStates.add(buildRoad(projectProbability, r));
-                }
                 for (final Settlement s : potentialSettlements) {
                     playStates.add(buildSettlement(projectProbability, s));
+                }
+                for (final Road r : potentialRoads) {
+                    playStates.add(buildRoad(projectProbability, r));
                 }
                 for (final Settlement s: potentialCities) {
                     playStates.add(buildCity(projectProbability, s));

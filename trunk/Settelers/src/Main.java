@@ -2,33 +2,41 @@ import java.util.*;
 
 
 public class Main {
-    private static final int maxTurns = 6;
+    private static final int maxTurns = 35;
 
-    private static final Map<Integer, Double> turnStates = new HashMap<Integer, Double>();
+    private static final Map<Integer, Double> winningProbabilites = new HashMap<Integer, Double>();
 
-    private static Set<State> nextStates(final Queue<State> current) {
+    private static Set<State> nextStates(final State s) {
 		final Set<State> nextStates = new HashSet<State>();
-		for (final State s : current) {
 		    if (s.getTurn() >= maxTurns) {
 			// ignore
 		    } else if (s.isWinning()) {
 		    	record(s);
 		    } else {
-				for (final State rollState : s.generateRollStates()) if (rollState.getTurn() < maxTurns) {
-				    for (final State playState : rollState.generatePlayStates()) if (playState.getTurn() < maxTurns) {
-					nextStates.add(playState);
-				    }
-				}
+		    	List<State> rollStates = s.generateRollStates();
+		    	
+		    	for (final State rollState : rollStates) if (rollState.getTurn() < maxTurns) {
+		    		List<State> playStates = rollState.generatePlayStates();
+		    		if( playStates.isEmpty() )
+		    			nextStates.add(rollState);
+		    		while( !playStates.isEmpty() ){
+		    			State next = playStates.remove(0);
+		    			//List<State> moreStates = next.generatePlayStates();
+		    			//if (moreStates.isEmpty())
+		    				nextStates.add(next);
+		    			
+		    			//playStates.addAll( moreStates );
+		    		}
+		    	}
 		    }
-		}
 		return nextStates;
     }
 
     public static void record(final State s) {
-	if (!turnStates.containsKey(s.getTurn())) {
-	    turnStates.put(s.getTurn(), s.getProbability());
+	if (!winningProbabilites.containsKey(s.getTurn())) {
+	    winningProbabilites.put(s.getTurn(), s.getProbability());
 	}
-	turnStates.put( s.getTurn(), turnStates.get(s.getTurn()) + s.getProbability() );
+	winningProbabilites.put( s.getTurn(), winningProbabilites.get(s.getTurn()) + s.getProbability() );
     }
 
     /**
@@ -36,21 +44,25 @@ public class Main {
      */
     public static void main(String[] args) {
 		Board board = new Board();
-		Settlement s1 = new Settlement( board.getPoint( 3, 3 ) );
-		Settlement s2 = new Settlement( board.getPoint( 4, 5 ) );
+		Settlement s1 = new Settlement( board.getPoint( 1, 4 ) );
+		Settlement s2 = new Settlement( board.getPoint( 4, 4 ) );
 		State start = new State ( s1, s2, new Road(s1, board.getPoint(2, 4)), new Road(s2, board.getPoint(3,5)), board);
 	
-		Queue<State> current = new LinkedList<State>();
+		Stack<State> current = new Stack<State>();
 		current.add(start);
 	
+		int i = 0;
 		while (!current.isEmpty()) {
-		    for (final State s: current) {
-		    	System.out.println(s);
-		    }
-		    current.addAll( nextStates(current) );
+			State next = current.pop();
+			if( (i % 100000) == 0 ){
+				System.out.println(winningProbabilites);
+				System.out.println(next);
+			}
+		    current.addAll( nextStates(next) );
+		    i++;
 		}
 		
-		System.out.println(turnStates);
+		System.out.println(winningProbabilites);
     }
 
 }
