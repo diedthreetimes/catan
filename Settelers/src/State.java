@@ -14,7 +14,7 @@ public class State {
 
 	private final int turn;
 	private final int points;
-	private final Map<Card.Type, Integer> hand;
+	private final EnumMap<Card.Type, Integer> hand;
 	private final List<City> cities;
 	private final List<Settlement> settlements;
 	private final List<Road> roads;
@@ -63,7 +63,7 @@ public class State {
          * @see #buidSettlement(double, Settlement) below
          * @see #buildCity(double, City) below
          */
-	private State( int t, int p, Map<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr ){
+	private State( int t, int p, EnumMap<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr ){
 		turn = t;
 		points = p;
 		hand = H;
@@ -82,7 +82,7 @@ public class State {
          * @param transitionProbability Probability of transitioning to this new state.
          * @param newHand Hand for the next stage.
          */
-        private State nextTurn(final double transitionProbability, final Map<Card.Type, Integer> newHand) {
+        private State nextTurn(final double transitionProbability, final EnumMap<Card.Type, Integer> newHand) {
             return new State(turn + 1, this.points, newHand, this.cities,
                     this.settlements, this.roads, this.map, probability * transitionProbability);
         }
@@ -91,7 +91,7 @@ public class State {
         private State buildRoad(final double transitionalProbability, final Road r) {
             final List<Road> newRoads = new ArrayList<Road>(roads);
             newRoads.add(r);
-            final Map<Card.Type, Integer> newHand = Structure.ROAD.payFrom(hand);
+            final EnumMap<Card.Type, Integer> newHand = Structure.ROAD.payFrom(hand);
             return new State(turn , this.points, newHand, this.cities,
                     this.settlements, newRoads, this.map, probability * transitionalProbability);
         }
@@ -99,7 +99,7 @@ public class State {
         private State buildSettlement(final double transitionalProbability, final Point s) {
             final List<Settlement> newSettlements = new ArrayList<Settlement>(settlements);
             newSettlements.add(new Settlement (s));
-            final Map<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
+            final EnumMap<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
             return new State(turn , this.points +1, newHand, this.cities,
                     newSettlements, this.roads, this.map, probability * transitionalProbability);
         }
@@ -109,7 +109,7 @@ public class State {
             newSettlements.remove(s);
             final List<City> newCities = new ArrayList<City>(cities);
             newCities.add(new City(s));
-            final Map<Card.Type, Integer> newHand = Structure.CITY.payFrom(hand);
+            final EnumMap<Card.Type, Integer> newHand = Structure.CITY.payFrom(hand);
             return new State(turn , this.points +1, newHand, newCities,
                     newSettlements, this.roads, this.map, probability * transitionalProbability);
         }
@@ -196,9 +196,11 @@ public class State {
 			
             final List<State> ans = new ArrayList<State>(11);
             
-            double noChangePr = 0;
+	    final Map<EnumMap<Card.Type, Integer>, Double> newHandPrs
+			= new HashMap<EnumMap<Card.Type, Integer>, Double>();
+	    newHandPrs.put(hand, 0.0);
             for( int i = 2; i<=12; i++ ){
-                final Map<Card.Type, Integer> newHand = new EnumMap<Card.Type, Integer>(hand);
+                final EnumMap<Card.Type, Integer> newHand = hand.clone();
                 for( final Settlement s : settlements){
                     for (final Card c : s.roll(i)) {
                         newHand.put(c.getType(), newHand.get(c.getType()) + 1);
@@ -209,14 +211,14 @@ public class State {
                         newHand.put(c.getType(), newHand.get(c.getType()) + 1);
                     }
                 }
-                
-                if( newHand.equals(this.hand) )
-                	noChangePr += PR[i - 2];
-                else
-                	ans.add(nextTurn(PR[i - 2], newHand));
+		if (!newHandPrs.containsKey(newHand)) {
+		    newHandPrs.put(newHand, 0.0);
+		}
+		newHandPrs.put(newHand, newHandPrs.get(newHand) + PR[i - 2]);
             }
-            if( noChangePr != 0 )
-            	ans.add(nextTurn(noChangePr, this.hand));
+	    for (final Map.Entry<EnumMap<Card.Type, Integer>, Double> e : newHandPrs.entrySet()) if (e.getValue() != 0.0) {
+		ans.add(nextTurn(e.getValue(), e.getKey()));
+	    }
             return ans;
 	}
 	
@@ -242,16 +244,17 @@ public class State {
             final Set<Settlement> potentialSettlements = new HashSet<Settlement>();
             final Set<Settlement> potentialCities = new HashSet<Settlement>();
             final Set<Structure> structureOptions = Structure.canBuildOptions(hand);
-            if (structureOptions.contains(Structure.ROAD)) {
-                potentialRoads.addAll(getAllPotentialRoads());
-            }
             if (structureOptions.contains(Structure.SETTLEMENT)) {
                 potentialSettlements.addAll(getAllPotentialSettlements());
             }
             if (structureOptions.contains(Structure.CITY)) for (final Settlement s : settlements) {
                 potentialCities.add(s);
             }
-            final int numProjects = potentialRoads.size() + potentialSettlements.size() + potentialCities.size();
+	    // only build roads when there is no other construction option
+            if (structureOptions.contains(Structure.ROAD) && potentialSettlements.isEmpty() && potentialCities.isEmpty()) {
+                potentialRoads.addAll(getAllPotentialRoads());
+            }
+            int numProjects = potentialRoads.size() + potentialSettlements.size() + potentialCities.size();
             final List<State> playStates = new ArrayList<State>();
             if (numProjects > 0) {
                 // treat all projects as equally likely until we have a smarter algorithm

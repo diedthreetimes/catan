@@ -2,7 +2,7 @@ import java.util.*;
 
 
 public class Main {
-    private static final int maxTurns = 35;
+    private static final int maxTurns = 9;
 
     private static final Map<Integer, Double> winningProbabilites = new HashMap<Integer, Double>();
 
