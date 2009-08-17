@@ -6,7 +6,6 @@ import java.util.*;
  * of member Collection classes.
  */
 public class State {
-	/* Chance of rolling x - 2 */
 
 	private final int turn;
 	private final int points;
@@ -87,6 +86,11 @@ public class State {
                     this.settlements, this.roads, this.map, probability * transitionProbability, weights);
         }
 
+        private State trade(final double transitionProbability, EnumMap<Card.Type, Integer> newHand){
+        	return new State(turn, this.points, newHand, this.cities,
+        			this.settlements, this.roads, this.map, this.probability * transitionProbability, weights);
+        	
+        }
         /* Should we add validation to these methods? */
         private State buildRoad(final double transitionalProbability, final Road r) {
             final List<Road> newRoads = new ArrayList<Road>(roads);
@@ -290,28 +294,36 @@ public class State {
             }
             else{
             	Card.Type c = getLeastCard();
+            	boolean changed = false;
+            	EnumMap<Card.Type, Integer> newHand = hand.clone();
             	while( hand.get(Card.Type.BRICK) >= 4 && Card.Type.BRICK.equals(c) ){
-            		hand.put(c, hand.get(c) + 1);
-            		hand.put(Card.Type.BRICK, hand.get(Card.Type.BRICK) - 4);
+            		newHand.put(c, newHand.get(c) + 1);
+            		newHand.put(Card.Type.BRICK, newHand.get(Card.Type.BRICK) - 4);
+            		changed = true;
             	}
-            	while( hand.get(Card.Type.ORE) >= 4 && Card.Type.ORE.equals(c) ){
-            		hand.put(c, hand.get(c) + 1);
-            		hand.put(Card.Type.ORE, hand.get(Card.Type.ORE) - 4);
+            	while( newHand.get(Card.Type.ORE) >= 4 && Card.Type.ORE.equals(c) ){
+            		newHand.put(c, newHand.get(c) + 1);
+            		newHand.put(Card.Type.ORE, newHand.get(Card.Type.ORE) - 4);
+            		changed = true;
             	}
-            	while( hand.get(Card.Type.WHEAT) >= 4 && Card.Type.WHEAT.equals(c) ){
-            		hand.put(c, hand.get(c) + 1);
-            		hand.put(Card.Type.WHEAT, hand.get(Card.Type.WHEAT) - 4);
+            	while( newHand.get(Card.Type.WHEAT) >= 4 && Card.Type.WHEAT.equals(c) ){
+            		newHand.put(c, newHand.get(c) + 1);
+            		newHand.put(Card.Type.WHEAT, hand.get(Card.Type.WHEAT) - 4);
+            		changed = true;
             	}
-            	while( hand.get(Card.Type.SHEEP) >= 4 && Card.Type.SHEEP.equals(c) ){
-            		hand.put(c, hand.get(c) + 1);
-            		hand.put(Card.Type.SHEEP, hand.get(Card.Type.SHEEP) - 4);
+            	while( newHand.get(Card.Type.SHEEP) >= 4 && Card.Type.SHEEP.equals(c) ){
+            		newHand.put(c, newHand.get(c) + 1);
+            		newHand.put(Card.Type.SHEEP, newHand.get(Card.Type.SHEEP) - 4);
+            		changed = true;
             	}
-            	while( hand.get(Card.Type.WOOD) >= 4 && Card.Type.WOOD.equals(c) ){
-            		hand.put(c, hand.get(c) + 1);
-            		hand.put(Card.Type.WOOD, hand.get(Card.Type.WOOD) - 4);
+            	while( newHand.get(Card.Type.WOOD) >= 4 && Card.Type.WOOD.equals(c) ){
+            		newHand.put(c, newHand.get(c) + 1);
+            		newHand.put(Card.Type.WOOD, newHand.get(Card.Type.WOOD) - 4);
+            		changed = true;
             	}
             	
-            	
+            	if( changed )
+            		playStates.add(trade(1, newHand));
             }
             
             
@@ -322,7 +334,7 @@ public class State {
             final Set<Road> potential = new HashSet<Road>();
             for (final Road road: roads) {
             	if( road.getStart().canPlaceSettlement(map, cities, settlements) || road.getEnd().canPlaceSettlement(map, cities, settlements) ){
-            		return null;
+            		return new HashSet<Road>();
             	}
                 potential.addAll(road.getPotentialConnectors(map));
             }
