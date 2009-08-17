@@ -7,10 +7,6 @@ import java.util.*;
  */
 public class State {
 	/* Chance of rolling x - 2 */
-	private static final double [] PR = {
-                1.0/36.0, 2.0/36, 3.0/36, 4.0/36,
-                5.0/36, 6.0/36, 5.0/36, 4.0/36,
-                3.0/36, 2.0/36 , 1.0/36 };
 
 	private final int turn;
 	private final int points;
@@ -20,6 +16,7 @@ public class State {
 	private final List<Road> roads;
 	private final Board map;
 	private final double probability;
+	private final Weight weights;
 	
 	
         /**
@@ -27,7 +24,9 @@ public class State {
          * Theoretically it could, but any initial state according to the rules of Catan
          *  only has two settlements and two roads.
          */
-	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m){
+	public State( Settlement s1, Settlement s2, Road r1, Road r2, Board m, Weight weights){
+		this.weights = weights;
+		
 		turn = 0;
 		points = 2;
 
@@ -63,7 +62,7 @@ public class State {
          * @see #buidSettlement(double, Settlement) below
          * @see #buildCity(double, City) below
          */
-	private State( int t, int p, EnumMap<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr ){
+	private State( int t, int p, EnumMap<Card.Type, Integer> H, List<City> C, List<Settlement> S, List<Road> R, Board m, double pr, Weight weights ){
 		turn = t;
 		points = p;
 		hand = H;
@@ -72,10 +71,11 @@ public class State {
 		roads = R;
 		map = m;
 		probability = pr;
+		this.weights = weights;
 	}
 
 	public State keepWinning() {
-	    return new State(turn + 1, points, hand, cities, settlements, roads, map, probability);
+	    return new State(turn + 1, points, hand, cities, settlements, roads, map, probability, weights);
 	}
 
         /**
@@ -84,7 +84,7 @@ public class State {
          */
         private State nextTurn(final double transitionProbability, final EnumMap<Card.Type, Integer> newHand) {
             return new State(turn + 1, this.points, newHand, this.cities,
-                    this.settlements, this.roads, this.map, probability * transitionProbability);
+                    this.settlements, this.roads, this.map, probability * transitionProbability, weights);
         }
 
         /* Should we add validation to these methods? */
@@ -93,7 +93,7 @@ public class State {
             newRoads.add(r);
             final EnumMap<Card.Type, Integer> newHand = Structure.ROAD.payFrom(hand);
             return new State(turn , this.points, newHand, this.cities,
-                    this.settlements, newRoads, this.map, probability * transitionalProbability);
+                    this.settlements, newRoads, this.map, probability * transitionalProbability, weights);
         }
 
         private State buildSettlement(final double transitionalProbability, final Point s) {
@@ -101,7 +101,7 @@ public class State {
             newSettlements.add(new Settlement (s));
             final EnumMap<Card.Type, Integer> newHand = Structure.SETTLEMENT.payFrom(hand);
             return new State(turn , this.points +1, newHand, this.cities,
-                    newSettlements, this.roads, this.map, probability * transitionalProbability);
+                    newSettlements, this.roads, this.map, probability * transitionalProbability, weights);
         }
 
         private State buildCity(final double transitionalProbability, final Settlement s) {
@@ -111,7 +111,7 @@ public class State {
             newCities.add(new City(s));
             final EnumMap<Card.Type, Integer> newHand = Structure.CITY.payFrom(hand);
             return new State(turn , this.points +1, newHand, newCities,
-                    newSettlements, this.roads, this.map, probability * transitionalProbability);
+                    newSettlements, this.roads, this.map, probability * transitionalProbability, weights);
         }
 
         /**
@@ -214,7 +214,7 @@ public class State {
 		if (!newHandPrs.containsKey(newHand)) {
 		    newHandPrs.put(newHand, 0.0);
 		}
-		newHandPrs.put(newHand, newHandPrs.get(newHand) + PR[i - 2]);
+		newHandPrs.put(newHand, newHandPrs.get(newHand) + Weight.PR[i - 2]);
             }
 	    for (final Map.Entry<EnumMap<Card.Type, Integer>, Double> e : newHandPrs.entrySet()) if (e.getValue() != 0.0) {
 		ans.add(nextTurn(e.getValue(), e.getKey()));
@@ -239,7 +239,7 @@ public class State {
                 development card (out of scope?) //yes
             special cases
                 robber (out of scope?) //yes
-                */
+            */
             final Set<Road> potentialRoads = new HashSet<Road>();
             final Set<Settlement> potentialSettlements = new HashSet<Settlement>();
             final Set<Settlement> potentialCities = new HashSet<Settlement>();
@@ -250,36 +250,80 @@ public class State {
             if (structureOptions.contains(Structure.CITY)) for (final Settlement s : settlements) {
                 potentialCities.add(s);
             }
+            
+            
+            int numProjects;
 	    // only build roads when there is no other construction option
             if (structureOptions.contains(Structure.ROAD) && potentialSettlements.isEmpty() && potentialCities.isEmpty()) {
                 potentialRoads.addAll(getAllPotentialRoads());
+                numProjects = potentialRoads.size();
             }
-            int numProjects = potentialRoads.size() + potentialSettlements.size() + potentialCities.size();
+            else
+            	numProjects = potentialSettlements.size() + potentialCities.size();
             final List<State> playStates = new ArrayList<State>();
             if (numProjects > 0) {
-                // treat all projects as equally likely until we have a smarter algorithm
-                final double projectProbability = 1.0 / numProjects;
-                for (final Settlement s : potentialSettlements) {
-                    playStates.add(buildSettlement(projectProbability, s));
+               
+            	double weightTotal = 0;
+            	
+            	for (final Settlement s : potentialSettlements) {
+                    weightTotal += weights.calculatePointWeight(s);
                 }
-                for (final Road r : potentialRoads) {
-                    playStates.add(buildRoad(projectProbability, r));
+            	for (final Settlement s: potentialCities) {
+                    weightTotal += weights.calculatePointWeight(s);
+                }
+            	
+                for (final Settlement s : potentialSettlements) {
+                    playStates.add(buildSettlement( weights.calculatePointWeight(s) / weightTotal, s));
                 }
                 for (final Settlement s: potentialCities) {
-                    playStates.add(buildCity(projectProbability, s));
+                    playStates.add(buildCity( weights.calculatePointWeight(s) / weightTotal, s));
                 }
+                
+                for (final Road r : potentialRoads) {
+                    playStates.add(buildRoad( 1.0 / (double)numProjects, r));
+                }               
                 // buid a wrapper list so we don't modify the collection under iteration
-                for (final State s : new ArrayList<State>(playStates)) {
+                //for (final State s : new ArrayList<State>(playStates)) {
                     // add all derivative states (other projects we can "buy" now
-                    playStates.addAll(s.generatePlayStates());
-                }
+                    //playStates.addAll(s.generatePlayStates());
+                //}
             }
+            else{
+            	Card.Type c = getLeastCard();
+            	while( hand.get(Card.Type.BRICK) >= 4 && Card.Type.BRICK.equals(c) ){
+            		hand.put(c, hand.get(c) + 1);
+            		hand.put(Card.Type.BRICK, hand.get(Card.Type.BRICK) - 4);
+            	}
+            	while( hand.get(Card.Type.ORE) >= 4 && Card.Type.ORE.equals(c) ){
+            		hand.put(c, hand.get(c) + 1);
+            		hand.put(Card.Type.ORE, hand.get(Card.Type.ORE) - 4);
+            	}
+            	while( hand.get(Card.Type.WHEAT) >= 4 && Card.Type.WHEAT.equals(c) ){
+            		hand.put(c, hand.get(c) + 1);
+            		hand.put(Card.Type.WHEAT, hand.get(Card.Type.WHEAT) - 4);
+            	}
+            	while( hand.get(Card.Type.SHEEP) >= 4 && Card.Type.SHEEP.equals(c) ){
+            		hand.put(c, hand.get(c) + 1);
+            		hand.put(Card.Type.SHEEP, hand.get(Card.Type.SHEEP) - 4);
+            	}
+            	while( hand.get(Card.Type.WOOD) >= 4 && Card.Type.WOOD.equals(c) ){
+            		hand.put(c, hand.get(c) + 1);
+            		hand.put(Card.Type.WOOD, hand.get(Card.Type.WOOD) - 4);
+            	}
+            	
+            	
+            }
+            
+            
             return playStates;
 	}
 
         private Set<Road> getAllPotentialRoads() {
             final Set<Road> potential = new HashSet<Road>();
             for (final Road road: roads) {
+            	if( road.getStart().canPlaceSettlement(map, cities, settlements) || road.getEnd().canPlaceSettlement(map, cities, settlements) ){
+            		return null;
+            	}
                 potential.addAll(road.getPotentialConnectors(map));
             }
             potential.removeAll(roads);
@@ -297,5 +341,19 @@ public class State {
                 potentialSettlements.add(new Settlement(point));
             }
             return potentialSettlements;
+        }
+        
+        private Card.Type getLeastCard(){
+        	int min = hand.get(Card.Type.WOOD);
+        	Card.Type minC = Card.Type.WOOD;
+        	
+        	for( Card.Type x : Card.Type.values() ){
+        		int n = hand.get(x);
+        		if ( n < min ){
+        			minC = x;
+        			min = n;
+        		}
+        	}
+        	return minC;
         }
 }
