@@ -1,4 +1,5 @@
 public class Weight {
+	/* Chance of rolling x + 2 */
 	public static final double [] PR = {
         1.0/36.0, 2.0/36, 3.0/36, 4.0/36,
         5.0/36, 6.0/36, 5.0/36, 4.0/36,
@@ -33,15 +34,15 @@ public class Weight {
 		for ( Resource r : p.getResources() ){
 			Card.Type type = r.produceCard().getType();
 			if( type.equals(Card.Type.BRICK) )
-				b += PR[r.getNumber()];
+				b += PR[r.getNumber()-2];
 			if( type.equals(Card.Type.ORE) )
-				o += PR[r.getNumber()];
+				o += PR[r.getNumber()-2];
 			if( type.equals(Card.Type.WHEAT) )
-				w += PR[r.getNumber()];
+				w += PR[r.getNumber()-2];
 			if( type.equals(Card.Type.WOOD) )
-				t += PR[r.getNumber()];
+				t += PR[r.getNumber()-2];
 			if( type.equals(Card.Type.SHEEP) )
-				s += PR[r.getNumber()];
+				s += PR[r.getNumber()-2];
 		}
 		return t * timber + o * ore + w * wheat + b * brick + s * sheep;		 
 	}
