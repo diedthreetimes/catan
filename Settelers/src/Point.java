@@ -11,6 +11,8 @@ public class Point {
         resources = hexes;
     }
 
+    Resource[] getResources() { return resources; }
+    
     /**
      * NOTE: this logic explicitly assumes single player.
      */
