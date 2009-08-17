@@ -2,7 +2,7 @@ import java.util.*;
 
 
 public class Main {
-    private static final int maxTurns = 50;
+    private static final int maxTurns = 9;
 
     private static final Map<Integer, Double> winningProbabilites = new HashMap<Integer, Double>();
 
@@ -21,11 +21,11 @@ public class Main {
 		    			nextStates.add(rollState);
 		    		while( !playStates.isEmpty() ){
 		    			State next = playStates.remove(0);
-		    			List<State> moreStates = next.generatePlayStates();
-		    			if (moreStates.isEmpty())
+		    			//List<State> moreStates = next.generatePlayStates();
+		    			//if (moreStates.isEmpty())
 		    				nextStates.add(next);
 		    			
-		    			playStates.addAll( moreStates );
+		    			//playStates.addAll( moreStates );
 		    		}
 		    	}
 		    }
@@ -33,10 +33,10 @@ public class Main {
     }
 
     public static void record(final State s) {
-    	if (!winningProbabilites.containsKey(s.getTurn())) {
-	    	winningProbabilites.put(s.getTurn(), s.getProbability());
-		}
-		winningProbabilites.put( s.getTurn(), winningProbabilites.get(s.getTurn()) + s.getProbability() );
+	if (!winningProbabilites.containsKey(s.getTurn())) {
+	    winningProbabilites.put(s.getTurn(), s.getProbability());
+	}
+	winningProbabilites.put( s.getTurn(), winningProbabilites.get(s.getTurn()) + s.getProbability() );
     }
 
     /**
@@ -46,10 +46,8 @@ public class Main {
 		Board board = new Board();
 		Settlement s1 = new Settlement( board.getPoint( 1, 4 ) );
 		Settlement s2 = new Settlement( board.getPoint( 4, 4 ) );
-		
 		Weight weights = new Weight();
-		
-		State start = new State ( s1, s2, new Road(s1, board.getPoint(2, 4)), new Road(s2, board.getPoint(3,5)), board, weights);
+		State start = new State ( s1, s2, new Road(s1, board.getPoint(1, 3)), new Road(s2, board.getPoint(4,5)), board, weights);
 	
 		Stack<State> current = new Stack<State>();
 		current.add(start);
